@@ -183,3 +183,7 @@ function startGame() {
 
 // On Load
 startGame();
+
+socket.on('connect', (socket) => {
+    console.log('sever', socket.id);
+  });
