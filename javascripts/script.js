@@ -1,7 +1,7 @@
 // Canvas Related 
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
-const socket = io('http://localhost:3000/');
+const socket = io('http://localhost:3001');
 let paddleIndex = 0;
 
 let width = 500;
@@ -184,6 +184,6 @@ function startGame() {
 // On Load
 startGame();
 
-socket.on('connect', (socket) => {
-    console.log('sever', socket.id);
+socket.on("connect", () => {
+    console.log(socket.id); // "G5p5..."
   });
