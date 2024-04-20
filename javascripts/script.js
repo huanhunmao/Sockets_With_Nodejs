@@ -3,6 +3,7 @@ const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
 const socket = io('http://localhost:3001');
 let paddleIndex = 0;
+let isReferee = false;
 
 let width = 500;
 let height = 700;
@@ -160,12 +161,15 @@ function animate() {
   window.requestAnimationFrame(animate);
 }
 
+function loadGame(){
+    createCanvas();
+    renderIntro();
+    socket.emit('ready')
+}
+
 // Start Game, Reset Everything
 function startGame() {
-  createCanvas();
-  renderIntro();
-  socket.emit('ready')
-  paddleIndex = 0;
+  paddleIndex = isReferee ? 0 : 1; // 裁判用顶板 否则用底板
   window.requestAnimationFrame(animate);
   canvas.addEventListener('mousemove', (e) => {
     playerMoved = true;
@@ -182,9 +186,17 @@ function startGame() {
 }
 
 // On Load
-startGame();
+loadGame()
 
-io.on("connect", () => {
+socket.on("connect", () => {
     console.log(socket.id); // "G5p5..."
   });
+
+socket.on("startGame", (refereeId) => {
+    console.log('Referee is', refereeId);
+
+    isReferee = socket.id === refereeId
+
+    startGame()
+})
 
