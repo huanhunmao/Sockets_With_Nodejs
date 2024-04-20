@@ -23,7 +23,8 @@ io.on('connection', (socket) => {
 
     readPlayerCount ++ 
 
-    if(readPlayerCount === 2) {
+    // 确保是 双数 在玩游戏
+    if(readPlayerCount % 2 === 0) {
         // broadcast('startGame', socket)
         io.emit('startGame', socket.id)
     }
@@ -37,6 +38,11 @@ io.on('connection', (socket) => {
 
     socket.on('ballMove', ballData => { 
         socket.broadcast.emit('ballMove',ballData); 
+    })
+    
+    // 监测 client 关闭
+    socket.on('disconnect', (reason) => {
+        console.log(`Client ${socket.id} disconnected: ${reason}`);
     })
 })
 });
