@@ -180,6 +180,12 @@ function startGame() {
     if (paddleX[paddleIndex] > (width - paddleWidth)) {
       paddleX[paddleIndex] = width - paddleWidth;
     }
+    // 同步
+    // 发送了一个包含当前玩家板横向位置 (xPosition) 的对象。
+    //这样做的目的是让服务器能够将这个位置信息传递给其他玩家，从而实现玩家板的同步移动
+    socket.emit('paddleMove', {
+        xPosition: paddleX[paddleIndex],
+    })
     // Hide Cursor
     canvas.style.cursor = 'none';
   });
@@ -198,5 +204,13 @@ socket.on("startGame", (refereeId) => {
     isReferee = socket.id === refereeId
 
     startGame()
+})
+
+// 同步 
+// 接收其他玩家板位置信息并更新本地的对手玩家板位置，以保持游戏的同步性
+socket.on('paddleMove', (paddleData) => {
+    // Toggle 1 into 0  and 0 into 1
+    const opponentPaddleIndex = 1 - paddleIndex  
+    paddleX[opponentPaddleIndex] = paddleData.xPosition;
 })
 
