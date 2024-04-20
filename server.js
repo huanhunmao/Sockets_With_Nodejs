@@ -31,8 +31,12 @@ io.on('connection', (socket) => {
     socket.on('paddleMove', paddleData => {
         // 此处记录的就是 左右滑动时 这个板的 xPosition 位置
         // 将这个 xPosition 位置  广播 📢 给 多个 客户端用户
-        console.log('paddleData',paddleData);  // paddleData { xPosition: 64 }
+        // console.log('paddleData',paddleData);  // paddleData { xPosition: 64 }
         socket.broadcast.emit('paddleMove', paddleData)
+    })
+
+    socket.on('ballMove', ballData => { 
+        socket.broadcast.emit('ballMove',ballData); 
     })
 })
 });

@@ -90,6 +90,12 @@ function ballReset() {
   ballX = width / 2;
   ballY = height / 2;
   speedY = 3;
+  // 将球 ⚽️ 移动数据 传给 服务端
+  socket.emit('ballMove', {
+    ballX,
+    ballY,
+    score
+  })
 }
 
 // Adjust Ball Movement
@@ -100,6 +106,12 @@ function ballMove() {
   if (playerMoved) {
     ballX += speedX;
   }
+  // 将球 ⚽️ 移动数据 传给 服务端
+  socket.emit('ballMove', {
+    ballX,
+    ballY,
+    score
+  })
 }
 
 // Determine What Ball Bounces Off, Score Points, Reset Ball
@@ -155,9 +167,12 @@ function ballBoundaries() {
 
 // Called Every Frame
 function animate() {
-  ballMove();
+    // client 区分 裁判/非裁判
+    if(isReferee){
+        ballMove();
+        ballBoundaries();
+    }
   renderCanvas();
-  ballBoundaries();
   window.requestAnimationFrame(animate);
 }
 
@@ -213,4 +228,9 @@ socket.on('paddleMove', (paddleData) => {
     const opponentPaddleIndex = 1 - paddleIndex  
     paddleX[opponentPaddleIndex] = paddleData.xPosition;
 })
+
+socket.on('ballMove', (ballData) => {
+    // 假设ballData对象中有ballX、ballY和score属性，直接将这些属性的值赋给对应的变量
+    ({ ballX, ballY, score } = ballData);
+  });
 
