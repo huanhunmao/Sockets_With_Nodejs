@@ -1,48 +1,14 @@
-const http = require('http');
-const server = http.createServer(); // 创建HTTP服务器实例
-const io = require('socket.io')(server, {
-    cors: {
-      origin: '*',
-    }
-  });
-  
+const http = require('http')
+const io = require('socket.io')
 
-const PORT = 3001;
+const apiServer = require('./api')
+const httpServer = http.createServer(apiServer)
+const socketServer = io(httpServer)
 
-server.listen(PORT);
+const sockets = require('./sockets')
+
+const PORT = 3000
+httpServer.listen(PORT)
 console.log(`Listening on port ${PORT}...`);
 
-let readPlayerCount = 0
-
-io.on('connection', (socket) => {
-  console.log('a user connected', socket.id);
-
-  socket.on('ready', () => {
-        
-    console.log('Player ready', socket.id);
-
-    readPlayerCount ++ 
-
-    // 确保是 双数 在玩游戏
-    if(readPlayerCount % 2 === 0) {
-        // broadcast('startGame', socket)
-        io.emit('startGame', socket.id)
-    }
-
-    socket.on('paddleMove', paddleData => {
-        // 此处记录的就是 左右滑动时 这个板的 xPosition 位置
-        // 将这个 xPosition 位置  广播 📢 给 多个 客户端用户
-        // console.log('paddleData',paddleData);  // paddleData { xPosition: 64 }
-        socket.broadcast.emit('paddleMove', paddleData)
-    })
-
-    socket.on('ballMove', ballData => { 
-        socket.broadcast.emit('ballMove',ballData); 
-    })
-    
-    // 监测 client 关闭
-    socket.on('disconnect', (reason) => {
-        console.log(`Client ${socket.id} disconnected: ${reason}`);
-    })
-})
-});
+sockets.listen(socketServer)

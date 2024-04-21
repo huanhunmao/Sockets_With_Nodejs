@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/huanhunmao/Sockets_With_Nodejs#readme",
   "dependencies": {
+    "express": "^4.19.2",
     "socket.io": "^4.7.5"
   }
 }
